@@ -1,0 +1,68 @@
+# ============================================================
+#  DSP KWS 项目 .gitignore
+# ============================================================
+
+# --- 编译产物 ---
+Debug/
+*.out
+*.obj
+*.d
+*.o
+*.a
+*.lib
+*.map
+*.hex
+*.bin
+*.mk
+ccsIncludes.opt
+ccsLinker.opt
+ccsObjs.opt
+*_linkInfo.xml
+
+# --- CCS IDE ---
+.settings/
+.launches/
+.ccsproject
+.cproject
+.project
+targetConfigs/
+
+# --- 训练相关 ---
+# 预计算缓存（体量大，可重新生成）
+mel_cache/
+training/checkpoints/best_model.pt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# --- 权重备份 ---
+*.bak
+*.bak_*
+
+# --- 系统文件 ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+.clangd/
+
+# --- 密钥 ---
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.*
+secrets.*
+*.token
+
+# --- IDE ---
+.vscode/
+.idea/
+.theia/
+.clangd/
