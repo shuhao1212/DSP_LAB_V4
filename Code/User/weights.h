@@ -106,7 +106,7 @@ extern const float bn_expand_bias[32];
 extern const float bn_expand_running_mean[32];
 extern const float bn_expand_running_var[32];
 extern const float bn_expand_num_batches_tracked[1];
-extern const float fc_weight[384];
-extern const float fc_bias[12];
+extern const float fc_weight[416];
+extern const float fc_bias[13];
 
 #endif

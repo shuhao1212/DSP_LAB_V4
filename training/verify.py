@@ -49,8 +49,8 @@ def verify_weight_loading(model: BcResNet, weights_dict: dict) -> bool:
         'pwconv.weight': (20, 16, 1, 1),
         'conv2.weight': (20, 20, 5, 1),
         'expand.weight': (32, 20, 1, 1),
-        'fc.weight': (12, 32),
-        'fc.bias': (12,),
+        'fc.weight': (13, 32),
+        'fc.bias': (13,),
     }
 
     all_ok = True
@@ -128,7 +128,7 @@ def verify_with_real_audio(model: BcResNet, wav_path: str = None) -> bool:
     model.eval()
 
     # 尝试找一个测试音频
-    data_root = Path(r"D:/speech_data")
+    data_root = WORKSPACE_ROOT / "data"
     test_words = ['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes']
     wav_files = []
     for word in test_words:
@@ -167,7 +167,7 @@ def main():
 
     # 加载模型和权重
     print("Loading model and weights ...")
-    model = BcResNet(n_classes=12)
+    model = BcResNet(n_classes=13)
     weights_dict = parse_weights_c(WEIGHTS_C)
     model = load_weights_to_model(model, weights_dict)
 

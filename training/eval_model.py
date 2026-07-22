@@ -10,7 +10,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Device: {device}')
 
 print('Loading best model...')
-model = BcResNet(n_classes=12).to(device)
+model = BcResNet(n_classes=13).to(device)
 ckpt_path = Path(__file__).resolve().parent / 'checkpoints' / 'best_model.pt'
 ckpt = torch.load(str(ckpt_path), map_location=device, weights_only=False)
 model.load_state_dict(ckpt['model_state_dict'])
@@ -39,7 +39,7 @@ print(f'\nTest Acc: {100.0*correct/total:.2f}% ({correct}/{total})')
 print('\nPer-class accuracy:')
 all_preds = np.array(all_preds)
 all_targets = np.array(all_targets)
-for c in range(12):
+for c in range(13):
     mask = all_targets == c
     if mask.sum() > 0:
         acc = 100.0 * (all_preds[mask] == c).sum() / mask.sum()
@@ -47,11 +47,11 @@ for c in range(12):
         print(f'  [{marker}] {LABELS[c]:>12}: {acc:5.1f}% ({mask.sum()} samples)')
 
 print('\nConfusion Matrix:')
-cm = np.zeros((12, 12), dtype=np.int32)
+cm = np.zeros((13, 13), dtype=np.int32)
 for p, t in zip(all_preds, all_targets):
     cm[t][p] += 1
 header = '         ' + ''.join(f'{l[:4]:>6}' for l in LABELS)
 print(header)
 for i, label in enumerate(LABELS):
-    row = f'{label:>8} ' + ''.join(f'{cm[i][j]:6d}' for j in range(12))
+    row = f'{label:>8} ' + ''.join(f'{cm[i][j]:6d}' for j in range(13))
     print(row)

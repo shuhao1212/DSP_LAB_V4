@@ -9,6 +9,7 @@ int main(void)
 
     Sys_Init();
     Key_Init();
+    Led_Init();
     Touch_Init();
     Project3_InitUi(&ctx);
 

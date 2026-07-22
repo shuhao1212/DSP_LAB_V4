@@ -27,12 +27,12 @@ MELS_NUM = 40         # DSP: PROJECT3_MELS_NUM
 NUM_FRAMES = 101      # DSP: PROJECT3_MODEL_FRAMES
 
 COMMAND_WORDS = ['down', 'go', 'left', 'no', 'off', 'on',
-                 'right', 'stop', 'up', 'yes']
+                 'right', 'zero', 'stop', 'up', 'yes']
 LABELS = ['_silence_', '_unknown_'] + COMMAND_WORDS
 LABEL_TO_ID = {lbl: i for i, lbl in enumerate(LABELS)}
 N_CLASSES = len(LABELS)
 
-DATA_ROOT = Path(r"D:/speech_data")
+DATA_ROOT = Path("D:/speech_data")
 
 
 def _build_mel_filter_bank():
@@ -171,6 +171,8 @@ class SpeechCommandsDataset(Dataset):
                  bg_noise_dir: Path = DATA_ROOT / "_background_noise_",
                  bg_noise_prob: float = 0.8,
                  time_shift: int = 1600,
+                 time_mask_param: int = 10,
+                 freq_mask_param: int = 8,
                  augment: bool = True):
         """
         Args:
@@ -178,12 +180,16 @@ class SpeechCommandsDataset(Dataset):
             bg_noise_dir: 背景噪声目录
             bg_noise_prob: 混合背景噪声的概率
             time_shift: 时间偏移范围 (samples)
+            time_mask_param: SpecAugment 时间 masking 最大宽度 (帧)
+            freq_mask_param: SpecAugment 频率 masking 最大宽度 (频带)
             augment: 是否做数据增强
         """
         self.split = split
         self.bg_noise_dir = bg_noise_dir
         self.bg_noise_prob = bg_noise_prob
         self.time_shift = time_shift
+        self.time_mask_param = time_mask_param
+        self.freq_mask_param = freq_mask_param
         self.augment = augment and (split == 'training')
 
         # 加载 split 列表
@@ -300,6 +306,28 @@ class SpeechCommandsDataset(Dataset):
         factor = 10 ** (random.uniform(-3.0, 3.0) / 20.0)  # ±3 dB
         return waveform * factor
 
+    def _spec_augment(self, logmel: np.ndarray) -> np.ndarray:
+        """SpecAugment: 时间 masking + 频率 masking (在 mel 频谱上).
+        
+        Args:
+            logmel: [MELS_NUM, NUM_FRAMES] = [40, 101]
+        Returns:
+            augmented logmel
+        """
+        # 频率 masking: 遮蔽连续的 mel 频带
+        f = random.randint(0, self.freq_mask_param)
+        if f > 0:
+            f0 = random.randint(0, MELS_NUM - f)
+            logmel[f0:f0 + f, :] = logmel.mean()
+
+        # 时间 masking: 遮蔽连续的时间帧
+        t = random.randint(0, self.time_mask_param)
+        if t > 0:
+            t0 = random.randint(0, NUM_FRAMES - t)
+            logmel[:, t0:t0 + t] = logmel.mean()
+
+        return logmel
+
     def __getitem__(self, index):
         filepath, label = self.samples[index]
 
@@ -316,6 +344,10 @@ class SpeechCommandsDataset(Dataset):
 
         # 提取 Log-Mel
         logmel = extract_log_mel(waveform)  # [40, 101]
+
+        # SpecAugment (仅在训练时)
+        if self.augment:
+            logmel = self._spec_augment(logmel)
 
         # 添加 channel 维度
         logmel = logmel[np.newaxis, :, :]  # [1, 40, 101]

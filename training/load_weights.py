@@ -231,6 +231,9 @@ def load_weights_to_model(model: BcResNet, weights: dict) -> BcResNet:
             # BN num_batches_tracked 不需要加载
             continue
 
+        if w.size != np.prod(target_shape):
+            print(f"  [SKIP] {pt_name}: size mismatch (old={w.size}, new={np.prod(target_shape)}), using random init")
+            continue
         w_shaped = w.reshape(target_shape)
         updated[pt_name] = torch.from_numpy(w_shaped.copy())
 
@@ -270,7 +273,7 @@ if __name__ == "__main__":
     print(f"Parsed {len(weights_dict)} arrays: {list(weights_dict.keys())}")
 
     print("\nCreating model and loading weights ...")
-    model = BcResNet(n_classes=12)
+    model = BcResNet(n_classes=13)
     model = load_weights_to_model(model, weights_dict)
     model.eval()
 

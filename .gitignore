@@ -1,5 +1,5 @@
 # ============================================================
-#  DSP KWS 项目 .gitignore
+#  DSP_LAB_V4 — .gitignore
 # ============================================================
 
 # --- 编译产物 ---
@@ -13,7 +13,11 @@ Debug/
 *.map
 *.hex
 *.bin
-*.mk
+objects.mk
+sources.mk
+subdir_rules.mk
+subdir_vars.mk
+makefile
 ccsIncludes.opt
 ccsLinker.opt
 ccsObjs.opt
@@ -22,32 +26,57 @@ ccsObjs.opt
 # --- CCS IDE ---
 .settings/
 .launches/
+.targets/
 .ccsproject
 .cproject
 .project
-targetConfigs/
+*.ccxml
 
-# --- 训练相关 ---
-# 预计算缓存（体量大，可重新生成）
+# --- 训练缓存（大文件，可重新生成） ---
 mel_cache/
-training/checkpoints/best_model.pt
+*.npy
 
-# Python
+# --- 训练输出 ---
+training/__pycache__/
+training/*.pyc
+training/checkpoints/
+training/train_log.txt
+
+# --- 数据集（太大，不上传） ---
+data/
+speech_data/
+
+# --- Python ---
 __pycache__/
 *.pyc
 *.pyo
-.env
 *.egg-info/
-
-# Jupyter
+.venv/
+venv/
+env/
+.env
 .ipynb_checkpoints/
 
-# --- 权重备份 ---
+# --- 密钥和敏感文件 ---
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.secret
+credentials.*
+
+# --- 备份文件 ---
 *.bak
 *.bak_*
+*~
 
-# --- 系统文件 ---
+# --- 操作系统 ---
 .DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 Thumbs.db
 Desktop.ini
 .clangd/

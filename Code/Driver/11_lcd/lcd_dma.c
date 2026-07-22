@@ -37,8 +37,8 @@ void Lcd_DMA_Init(void)
                     RASTER_BURST_SIZE_16, RASTER_FIFO_THRESHOLD_8,
                     RASTER_BIG_ENDIAN_DISABLE);
                     
-    // 使能帧结束中断
-    RasterEndOfFrameIntEnable(SOC_LCDC_0_REGS);
+    // 禁用帧结束中断（单缓冲模式下无需EOF中断，开启无ISR会导致系统崩溃）
+    RasterEndOfFrameIntDisable(SOC_LCDC_0_REGS);
 
     // 配置帧缓冲器0地址
     RasterDMAFBConfig(SOC_LCDC_0_REGS,

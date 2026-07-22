@@ -69,7 +69,7 @@ class BcResNet(nn.Module):
     """
     精确复刻 DSP 端 Project3_BCResNetForward() 的完整前向流程.
     """
-    def __init__(self, n_classes: int = 12, bn_eps: float = 1e-5):
+    def __init__(self, n_classes: int = 13, bn_eps: float = 1e-5):
         super().__init__()
 
         # conv1: 1→16, 3×3, stride=(2,1), pad=(1,1)
@@ -172,7 +172,7 @@ def count_parameters(model: nn.Module) -> dict:
 
 
 if __name__ == "__main__":
-    model = BcResNet(n_classes=12)
+    model = BcResNet(n_classes=13)
     print(f"Parameters: {count_parameters(model)}")
     x = torch.randn(1, 1, 40, 101)
     with torch.no_grad():

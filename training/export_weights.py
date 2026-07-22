@@ -218,7 +218,7 @@ def export_weights(model: BcResNet, output_c: Path = OUTPUT_C,
 if __name__ == "__main__":
     from load_weights import parse_weights_c, load_weights_to_model
     print("Loading existing model for export test ...")
-    model = BcResNet(n_classes=12)
+    model = BcResNet(n_classes=13)
     weights_dict = parse_weights_c(WORKSPACE_ROOT / "Code" / "User" / "weights.c")
     model = load_weights_to_model(model, weights_dict)
     model.eval()
