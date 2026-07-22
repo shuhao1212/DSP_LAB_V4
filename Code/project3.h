@@ -1454,12 +1454,23 @@ static void Project3_HandleKeys(PROJECT3_CONTEXT *ctx)
 {
     if (FLAG_KEY1) {
         FLAG_KEY1 = 0;
-        // KEY1: 清除当前结果，回到 listening
+        /* KEY1: 手动切换唤醒状态（等同于说 zero 的唤醒/休眠效果） */
         Project3_ResetUtterance(ctx);
         ctx->input_gate_blocks = 0;
-        ctx->ui_hold_blocks = 0;
-        Project3_SetAppState(ctx, PROJECT3_APP_LISTENING);
-        Project3_SetUiText(ctx, "I am listening...", "", "");
+        ctx->ui_hold_blocks = PROJECT3_RESULT_HOLD_BLOCKS;
+        if (ctx->wake_active) {
+            ctx->wake_active = 0;
+            Project3_SetAppState(ctx, PROJECT3_APP_LISTENING);
+            Project3_SetUiText(ctx, "Sleeping...", "Wake word disabled", "Say Zero to activate");
+            Led_Control(LED1_CORE, LED_OFF);
+            Led_Control(LED2_CORE, LED_OFF);
+        } else {
+            ctx->wake_active = 1;
+            Project3_SetAppState(ctx, PROJECT3_APP_LISTENING);
+            Project3_SetUiText(ctx, "Activated!", "Wake word enabled", "Speak any command");
+            Led_Control(LED1_CORE, LED_ON);
+            Led_Control(LED2_CORE, LED_ON);
+        }
     }
     if (FLAG_KEY2) {
         FLAG_KEY2 = 0;
