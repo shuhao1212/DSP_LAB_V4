@@ -10,7 +10,6 @@ int main(void)
     Sys_Init();
     Key_Init();
     Led_Init();
-    Touch_Init();
     Project3_InitUi(&ctx);
 
     Adc_Init(PROJECT3_ADC_RATE, PROJECT3_BLOCK_SAMPLES);
@@ -34,7 +33,6 @@ int main(void)
         }
 
         Project3_HandleKeys(&ctx);
-        Project3_HandleTouch(&ctx);
 
         if (FLAG_AD == 1) {
             FLAG_AD = 0;

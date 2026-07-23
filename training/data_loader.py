@@ -161,6 +161,9 @@ def load_wav(filepath: Path, target_sr: int = SAMPLE_RATE) -> np.ndarray:
     if peak > 0:
         data = data / peak
 
+    # 预加重: y[n] = x[n] - 0.97*x[n-1], 提升高频辅音 ~6dB/octave
+    data[1:] = data[1:] - 0.97 * data[:-1]
+
     return data.astype(np.float32)
 
 
@@ -552,8 +555,8 @@ class PrecomputedSpeechCommandsDataset(Dataset):
         mel = mel[np.newaxis, :, :]
         return torch.from_numpy(mel), torch.tensor(label, dtype=torch.long)
 
-    def _freq_mask(self, mel: np.ndarray, max_width: int = 10, num_masks: int = 1) -> np.ndarray:
-        """频率维 masking (SpecAugment)."""
+    def _freq_mask(self, mel: np.ndarray, max_width: int = 15, num_masks: int = 1) -> np.ndarray:
+        """频率维 masking (SpecAugment). 加宽至15频带模拟不同麦克风响应."""
         if not self.spec_augment:
             return mel
         for _ in range(num_masks):
@@ -563,8 +566,8 @@ class PrecomputedSpeechCommandsDataset(Dataset):
                 mel[f0:f0 + f, :] = mel.mean()
         return mel
 
-    def _time_mask(self, mel: np.ndarray, max_width: int = 20, num_masks: int = 2) -> np.ndarray:
-        """时间维 masking (SpecAugment)."""
+    def _time_mask(self, mel: np.ndarray, max_width: int = 30, num_masks: int = 2) -> np.ndarray:
+        """时间维 masking (SpecAugment). 加宽至30帧强迫学习辅-元-辅全序列."""
         if not self.spec_augment:
             return mel
         for _ in range(num_masks):

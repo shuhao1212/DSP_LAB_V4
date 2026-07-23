@@ -210,7 +210,6 @@ static volatile int s_lcd_busy = 0;
 static void Project3_InitContext(PROJECT3_CONTEXT *ctx);
 static void Project3_InitUi(PROJECT3_CONTEXT *ctx);
 static void Project3_HandleKeys(PROJECT3_CONTEXT *ctx);
-static void Project3_HandleTouch(PROJECT3_CONTEXT *ctx);
 static void Project3_ProcessAudioBlock(PROJECT3_CONTEXT *ctx, short *block, unsigned int block_samples);
 static void Project3_UpdateUi(PROJECT3_CONTEXT *ctx, unsigned char force_redraw);
 static void Project3_ModelInit(PROJECT3_CONTEXT *ctx);
@@ -703,6 +702,10 @@ static void Project3_BuildModelWave(const PROJECT3_UTTERANCE_BUFFER *utter)
             sample = (float)utter->raw[base];
         }
         g_project3_model_wave[n] = sample * (PROJECT3_INPUT_GAIN / 32768.0f);
+    }
+    /* 预加重: y[n] = x[n] - 0.97*x[n-1], 提升高频辅音约6dB/octave */
+    for (n = PROJECT3_MODEL_SAMPLES - 1; n > 0; n--) {
+        g_project3_model_wave[n] -= 0.97f * g_project3_model_wave[n - 1];
     }
 }
 
@@ -1493,40 +1496,6 @@ static void Project3_HandleKeys(PROJECT3_CONTEXT *ctx)
         // KEY5: 系统重启
         Project3_InitContext(ctx);
         Project3_ModelInit(ctx);
-    }
-}
-
-static void Project3_HandleTouch(PROJECT3_CONTEXT *ctx)
-{
-    if (FLAG_TOUCH) {
-        FLAG_TOUCH = 0;
-        Touch_Scan();
-    }
-
-    // 触摸屏功能已禁用，所有控制通过物理按键
-    if (FLAG_BUTTON_1) {
-        FLAG_BUTTON_1 = 0;
-    }
-    if (FLAG_BUTTON_2) {
-        FLAG_BUTTON_2 = 0;
-    }
-    if (FLAG_BUTTON_3) {
-        FLAG_BUTTON_3 = 0;
-    }
-    if (FLAG_BUTTON_4) {
-        FLAG_BUTTON_4 = 0;
-    }
-    if (FLAG_BUTTON_5) {
-        FLAG_BUTTON_5 = 0;
-    }
-    if (FLAG_BUTTON_6) {
-        FLAG_BUTTON_6 = 0;
-    }
-    if (FLAG_BUTTON_7) {
-        FLAG_BUTTON_7 = 0;
-    }
-    if (FLAG_BUTTON_8) {
-        FLAG_BUTTON_8 = 0;
     }
 }
 

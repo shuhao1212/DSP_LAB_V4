@@ -158,7 +158,7 @@ def main():
 
     # 损失函数: 给弱项词加权 + 标签平滑
     class_weights = torch.ones(len(LABELS))
-    class_weights[LABEL_TO_ID['on']] = 1.6     # 上次 93.4%, 需加强
+    class_weights[LABEL_TO_ID['on']] = 2.0     # 最弱命令词 /ɔn/，短词+元音开头无辅音锚点
     class_weights[LABEL_TO_ID['off']] = 1.4    # 上次 93.6%
     class_weights[LABEL_TO_ID['_unknown_']] = 1.4  # 上次 80.5%
     class_weights[LABEL_TO_ID['_silence_']] = 0.5
